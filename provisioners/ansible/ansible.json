@@ -1,9 +1,14 @@
 // copy the below into your packer.json file after the builders section.  Make sure to update any variables.
 ,
 	"provisioners": [{
+		"type": "shell",
+		"inline_shebang": "/bin/bash",
+  	"inline": [ "sleep 30", "yum install -y epel-release", "yum install -y ansible" ]
+		},
+		{
 		"type": "ansible-local",
 		"playbook_file": "playbook.yml",
-		"roles_paths":"{{ user `roles_paths`}}"
+		"role_paths":"{{ user `role_paths`}}"
 	}]
 
 //variables:

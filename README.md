@@ -3,8 +3,8 @@
 <p>Packer build for Digital Ocean snapshots.</p>
 <h3>Requirements</h3>
 <ul>
-<li>Packer 0.7.5</li>
-<li>Ansible 1.8.2</li>
+<li>Packer</li>
+<li>Ansible</li>
 <li>A Digital Ocean account</li>
 </ul>
 
