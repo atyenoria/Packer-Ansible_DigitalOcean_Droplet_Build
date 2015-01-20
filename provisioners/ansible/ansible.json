@@ -1,0 +1,10 @@
+// copy the below into your packer.json file after the builders section.  Make sure to update any variables.
+,
+	"provisioners": [{
+		"type": "ansible-local",
+		"playbook_file": "playbook.yml",
+		"roles_paths":"{{ user `roles_paths`}}"
+	}]
+
+//variables:
+// "roles_paths":""

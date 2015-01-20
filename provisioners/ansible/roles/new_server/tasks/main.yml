@@ -1,0 +1,73 @@
+---
+- name: Ensure that a non-root user exists
+  sudo: yes
+  user: name={{non_root_user}} password={{hashed_password}} group={{user_group}} shell=/bin/bash generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa
+
+- name: Ensure that the remote login for the root user is disabled
+  sudo: yes
+  lineinfile: dest=/etc/ssh/sshd_config regexp="PermitRootLogin " insertafter="PermitRootLogin " line="PermitRootLogin No" state=present
+
+- name: Ensure that the default SSH port has been changed
+  lineinfile: dest=/etc/ssh/sshd_config regexp="Port 22" insertafter="Port 22" line="Port 1234" state=present
+
+- name: Ensure the SSH daemon has been reloaded for changes to take effect
+  sudo: yes
+  service: name=sshd state=restarted enabled=yes
+
+- name: Ensure the firewalld is started and enabled on boot
+  service: name=firewalld state=started enabled=yes
+
+# Two steps: first disable the ssh service, then enable the specific ports needed
+- name: Ensure your firewall will block all SSH connections
+  firewalld: service=sshd permanent=true state=disabled
+
+- name: Ensure you you can SSH to your new port
+  firewalld: port=1234/tcp permanent=true state=enabled
+
+- name: Ensure your firewall will allow web server traffic on http
+  firewalld: service=http permanent=true state=enabled
+
+- name: Ensure your firewall will allow web server traffic on http
+  firewalld: service=https permanent=true state=enabled
+
+- name: Ensure the timezone is set
+  sudo: yes
+  command: timedatectl set-timezone {{ region_timezone }}
+
+- name: Ensure that the NTP daemon is installed
+  yum: name=ntp state=present
+
+- name: Ensure that the NTP daemon is started and enabled on boot
+  service: name=ntpd state=started enabled=yes
+
+- name: Ensure that the swap file has been created
+  sudo: yes
+  command: dd if=/dev/zero of=/swapfile bs=1024 count={{swap_size}}
+
+- name: Ensure the correct permissions are set on the swap
+  sudo: yes
+  command: chmod 0600 /swapfile
+
+- name: Ensure the file is formatted for swap
+  sudo: yes
+  command: mkswap /swapfile
+
+- name: Ensure the swapfile is available to the system
+  sudo: yes
+  command: swapon /swapfile
+
+- name: Ensure the swapfile is available on boot
+  sudo: yes
+  lineinfile: dest=/etc/fstab line="/swapfile none swap sw 0 0" state=present
+
+- name: Ensure that the EPEL repository is enabled
+  yum: name=epel-release state=present
+
+- name: Ensure that fail2ban is installed
+  yum: name=fail2ban state=present
+
+- name: Create a local copy of jail.conf
+  template: src=jail.conf.j2 dest=/etc/fail2ban/jail.local
+
+- name: Ensure that fail2ban is started and enabled on boot
+  service: name=fail2ban state=started enabled=yes

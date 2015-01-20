@@ -1,14 +1,26 @@
 {
 	"variables": {
-		"api_token":""
+		"api_token":"",
+		"build_image":"",
+		"role_paths":"",
+		"region":"",
+		"snapshot_name":""
 	},
-
-	"builders": [
+	"builders": [{
+  	"type": "digitalocean",
+  	"api_token":"{{ user `api_token` }}",
+  	"image":"{{ user `build_image` }}",
+  	"region":"{{ user `region` }}",
+  	"snapshot_name":"{{ user `snapshot_name` }}{{timestamp}}"
+	}],
+	"provisioners": [{
+		"type": "shell",
+		"inline_shebang": "/bin/bash",
+  	"inline": [ "sleep 30", "yum install -y epel-release", "yum install -y ansible" ]
+		},
 		{
-  		"type": "digitalocean",
-  		"api_token":"{{ user `api_token` }}",
-  		"name":"522.5.0 (stable)",
-  		"region":"nyc2"
-		}
-	]
+		"type": "ansible-local",
+		"playbook_file": "playbook.yml",
+		"role_paths":"{{ user `role_paths`}}"
+	}]
 }

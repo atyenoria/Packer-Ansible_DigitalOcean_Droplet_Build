@@ -1,0 +1,8 @@
+---
+non_root_user: "developer"
+hashed_password: "$6$rounds=100000$1DUIcYlnmYk9tRKr$UpZmyJMkfuuqnp3VK3zw979S.9q3Qn8o5HckKpasLruOQahGn93c8pAd.iadcEGn4r.kkA5O6Gpw4geKdgxuJ."
+user_group: "wheel"
+swap_size: "1048576"
+f2b_whitelist_IPs: "localhost"
+python_version: "2.7.5"
+region_timezone: "America/New_York"
